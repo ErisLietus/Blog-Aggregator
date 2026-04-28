@@ -1,0 +1,16 @@
+{
+  "name": "gator",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "@types/node": "^22.19.17",
+    "tsx": "^4.19.1",
+    "typescript": "^5.7.2"
+  }
+}
