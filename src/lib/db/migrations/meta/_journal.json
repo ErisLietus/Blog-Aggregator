@@ -8,6 +8,13 @@
       "when": 1777547489982,
       "tag": "0000_oval_cobalt_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777903064298,
+      "tag": "0001_regular_ma_gnuci",
+      "breakpoints": true
     }
   ]
 }

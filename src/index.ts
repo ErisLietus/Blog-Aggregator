@@ -1,4 +1,4 @@
-import { HandlerAgg } from "./commands/aggregate";
+import { handlerAgg } from "./commands/aggregate";
 import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
 import { resetCommand } from "./commands/reset";
 import { handlerGetUsers, handlerLogin, handlerRegister} from "./commands/user";
@@ -9,7 +9,7 @@ async function  main() {
   registerCommand(commandsRegistry, "register", handlerRegister);
   registerCommand(commandsRegistry, "reset", resetCommand);
   registerCommand(commandsRegistry, "users", handlerGetUsers)
-  registerCommand(commandsRegistry, "agg", HandlerAgg)
+  registerCommand(commandsRegistry, "agg", handlerAgg)
   const args = process.argv.slice(2);
   if(args.length < 1) {
     console.log("Not enough arguments provided");
