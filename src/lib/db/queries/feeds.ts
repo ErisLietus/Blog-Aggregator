@@ -64,47 +64,10 @@ export async function getFeeds() {
   return result
 }
 
-export async function createFeedFollow(userId: string, feedId: string) {
-  const [newFeedFollow] = await db
-  .insert(feed_follows)
-  .values({ userId, feedId })
-  .returning();
-
-  const [result] = await db
-  .select({
-    id: feed_follows.id,
-    createdAt: feed_follows.createdAt,
-    updatedAt: feed_follows.updatedAt,
-    userId: feed_follows.userId,
-    feedId: feed_follows.feedId,
-    feedName: feeds.name,
-    userName: users.name,
-  })
-  .from(feed_follows)
-  .innerJoin(feeds, eq(feed_follows.feedId, feeds.id))
-  .innerJoin(users, eq(feed_follows.userId, users.id))
-  .where(eq(feed_follows.id, newFeedFollow.id));
-
-return result;
-}
-
-export async function followCommand(cmdName: string, ...args: string[]) {
-  if (args.length !== 1) {
-    throw new Error(`usage: ${cmdName} <url>`);
-  }
-  const url = args[0];
-
-  const config = readConfig();
-  const currentUser = await getUserByName(config.currentUserName);
-  if (!currentUser) {
-    throw new Error("current user not found");
-  }
-
-  const feed = await getFeedByUrl(url);
-  if (!feed) {
-    throw new Error(`no feed found with url: ${url}`);
-  }
-
-  const result = await createFeedFollow(currentUser.id, feed.id);
-  console.log(`${result.userName} now follows ${result.feedName}`);
+export async function getFeedByUrl(url: string) {
+  const [feed] = await db
+    .select()
+    .from(feeds)
+    .where(eq(feeds.url, url));
+  return feed;
 }

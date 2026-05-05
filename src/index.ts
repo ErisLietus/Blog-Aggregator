@@ -1,6 +1,6 @@
 import { handlerAgg } from "./commands/aggregate";
 import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
-import { followCommand } from "./commands/feed-follows";
+import { followCommand, followingCommand } from "./commands/feed-follows";
 import { resetCommand } from "./commands/reset";
 import { handlerGetUsers, handlerLogin, handlerRegister} from "./commands/user";
 import { handlerAddFeed, handlerListFeeds } from "./lib/db/queries/feeds";
@@ -15,6 +15,7 @@ async function  main() {
   registerCommand(commandsRegistry, "addfeed", handlerAddFeed)
   registerCommand(commandsRegistry, "feeds", handlerListFeeds)
   registerCommand(commandsRegistry, "follow", followCommand)
+  registerCommand(commandsRegistry, "following", followingCommand)
   const args = process.argv.slice(2);
   if(args.length < 1) {
     console.log("Not enough arguments provided");
