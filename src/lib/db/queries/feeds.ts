@@ -1,11 +1,12 @@
 import { readConfig } from "src/config";
 import { db } from "..";
-import { feeds, Feed, User } from "../schema";
+import { feeds, Feed, User, users, feed_follows } from "../schema";
 import { getUserById, getUserByName } from "./users";
+import { eq } from "drizzle-orm";
 
 
 export async function createFeed(name: string, url: string, userId: string) {
-    const [result] = await db.insert(feeds).values({name:name , url: url, users_id: userId}).returning()
+    const [result] = await db.insert(feeds).values({name:name , url: url, usersId: userId}).returning()
     return result
   
 }
@@ -35,7 +36,6 @@ export async function handlerAddFeed(cmdName: string, ...args: string[]) {
   printFeed(feed, currentUser);
 }
 
-// handler for the "feeds" command
 export async function handlerListFeeds(cmdName: string) {
   
   const feeds = await getFeeds()
@@ -44,12 +44,11 @@ export async function handlerListFeeds(cmdName: string) {
     throw new Error("There are no feeds")
   }
 
-
 for (const feed of feeds) {
-  const user = await getUserById(feed.userId)
+  const user = await getUserById(feed.usersId)
 
   if (!user) {
-    console.log("No feeds found")
+    console.log("No users found")
     return
   }
 
@@ -60,9 +59,52 @@ for (const feed of feeds) {
 }
 }
 
-
 export async function getFeeds() {
   const result = await db.select().from(feeds)
   return result
- 
+}
+
+export async function createFeedFollow(userId: string, feedId: string) {
+  const [newFeedFollow] = await db
+  .insert(feed_follows)
+  .values({ userId, feedId })
+  .returning();
+
+  const [result] = await db
+  .select({
+    id: feed_follows.id,
+    createdAt: feed_follows.createdAt,
+    updatedAt: feed_follows.updatedAt,
+    userId: feed_follows.userId,
+    feedId: feed_follows.feedId,
+    feedName: feeds.name,
+    userName: users.name,
+  })
+  .from(feed_follows)
+  .innerJoin(feeds, eq(feed_follows.feedId, feeds.id))
+  .innerJoin(users, eq(feed_follows.userId, users.id))
+  .where(eq(feed_follows.id, newFeedFollow.id));
+
+return result;
+}
+
+export async function followCommand(cmdName: string, ...args: string[]) {
+  if (args.length !== 1) {
+    throw new Error(`usage: ${cmdName} <url>`);
+  }
+  const url = args[0];
+
+  const config = readConfig();
+  const currentUser = await getUserByName(config.currentUserName);
+  if (!currentUser) {
+    throw new Error("current user not found");
+  }
+
+  const feed = await getFeedByUrl(url);
+  if (!feed) {
+    throw new Error(`no feed found with url: ${url}`);
+  }
+
+  const result = await createFeedFollow(currentUser.id, feed.id);
+  console.log(`${result.userName} now follows ${result.feedName}`);
 }
