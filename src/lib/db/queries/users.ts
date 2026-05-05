@@ -17,3 +17,10 @@ await db.delete(users);
 export async function getUsers(){
   return await db.select().from(users);
 }
+
+
+export async function getUserById(id: string) {
+  const [user_id] = await db.select().from(users).where(eq(users.id, id))
+  return user_id
+ 
+}

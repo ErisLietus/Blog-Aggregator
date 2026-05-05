@@ -1,7 +1,7 @@
 import { readConfig } from "src/config";
 import { db } from "..";
 import { feeds, Feed, User } from "../schema";
-import { getUserByName } from "./users";
+import { getUserById, getUserByName } from "./users";
 
 
 export async function createFeed(name: string, url: string, userId: string) {
@@ -33,4 +33,36 @@ export async function handlerAddFeed(cmdName: string, ...args: string[]) {
 
   const feed = await createFeed(feedName, feedUrl, currentUser.id);
   printFeed(feed, currentUser);
+}
+
+// handler for the "feeds" command
+export async function handlerListFeeds(cmdName: string) {
+  
+  const feeds = await getFeeds()
+
+  if(feeds.length === 0) {
+    throw new Error("There are no feeds")
+  }
+
+
+for (const feed of feeds) {
+  const user = await getUserById(feed.userId)
+
+  if (!user) {
+    console.log("No feeds found")
+    return
+  }
+
+  console.log(feed.name)
+  console.log(feed.url)
+  console.log(user.name) 
+
+}
+}
+
+
+export async function getFeeds() {
+  const result = await db.select().from(feeds)
+  return result
+ 
 }
