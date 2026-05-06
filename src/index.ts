@@ -1,21 +1,23 @@
 import { handlerAgg } from "./commands/aggregate";
 import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
-import { followCommand, followingCommand } from "./commands/feed-follows";
+import { followCommand, followingCommand, unFollow } from "./commands/feed-follows";
 import { resetCommand } from "./commands/reset";
 import { handlerGetUsers, handlerLogin, handlerRegister} from "./commands/user";
 import { handlerAddFeed, handlerListFeeds } from "./lib/db/queries/feeds";
+import { middlewareLoggedIn } from "./middleware";
 
 async function  main() {
   const commandsRegistry: CommandsRegistry = {};
-  registerCommand(commandsRegistry,"login",handlerLogin)
+  registerCommand(commandsRegistry,"login", handlerLogin)
   registerCommand(commandsRegistry, "register", handlerRegister);
   registerCommand(commandsRegistry, "reset", resetCommand);
   registerCommand(commandsRegistry, "users", handlerGetUsers)
   registerCommand(commandsRegistry, "agg", handlerAgg)
-  registerCommand(commandsRegistry, "addfeed", handlerAddFeed)
+  registerCommand(commandsRegistry, "addfeed", middlewareLoggedIn(handlerAddFeed),)
   registerCommand(commandsRegistry, "feeds", handlerListFeeds)
-  registerCommand(commandsRegistry, "follow", followCommand)
-  registerCommand(commandsRegistry, "following", followingCommand)
+  registerCommand(commandsRegistry, "follow", middlewareLoggedIn(followCommand),)
+  registerCommand(commandsRegistry, "following", middlewareLoggedIn(followingCommand),)
+  registerCommand(commandsRegistry, "unfollow", middlewareLoggedIn(unFollow))
   const args = process.argv.slice(2);
   if(args.length < 1) {
     console.log("Not enough arguments provided");

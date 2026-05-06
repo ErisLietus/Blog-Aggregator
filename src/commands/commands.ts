@@ -1,4 +1,4 @@
-
+import { User } from "src/lib/db/schema";
 
 export type CommandHandler = (
     cmdname: string,
@@ -19,4 +19,5 @@ export async function runCommand(registry: CommandsRegistry, cmdName: string, ..
 } else{
    await registry[cmdName](cmdName, ...args)
 }
-};
+}
+

@@ -1,8 +1,9 @@
 import { readConfig } from "src/config";
 import { db } from "..";
-import { feeds, Feed, User, users, feed_follows } from "../schema";
+import { feeds, Feed, User, } from "../schema";
 import { getUserById, getUserByName } from "./users";
 import { eq } from "drizzle-orm";
+import { createFeedFollow } from "src/commands/feed-follows";
 
 
 export async function createFeed(name: string, url: string, userId: string) {
@@ -20,7 +21,7 @@ function printFeed(feed: Feed, user: User) {
   console.log(`Updated:   ${feed.updatedAt}`);
 }
 
-export async function handlerAddFeed(cmdName: string, ...args: string[]) {
+export async function handlerAddFeed(cmdName: string, user: User, ...args: string[]) {
   if (args.length !== 2) {
     throw new Error(`usage: addfeed <name> <url>`);
   }
@@ -34,6 +35,9 @@ export async function handlerAddFeed(cmdName: string, ...args: string[]) {
 
   const feed = await createFeed(feedName, feedUrl, currentUser.id);
   printFeed(feed, currentUser);
+
+  const follow = await createFeedFollow(currentUser.id, feed.id)
+  console.log(`${follow.userName} now follows ${follow.feedName}`);
 }
 
 export async function handlerListFeeds(cmdName: string) {
