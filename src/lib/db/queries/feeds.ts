@@ -2,7 +2,7 @@ import { readConfig } from "src/config";
 import { db } from "..";
 import { feeds, Feed, User, } from "../schema";
 import { getUserById, getUserByName } from "./users";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { createFeedFollow } from "src/commands/feed-follows";
 
 
@@ -74,4 +74,13 @@ export async function getFeedByUrl(url: string) {
     .from(feeds)
     .where(eq(feeds.url, url));
   return feed;
+}
+
+export async function markFeedFetched(id: string) {
+  const newDate = new Date();
+  await db.update(feeds).set({updatedAt: newDate, lastFetchedAt: newDate}).where(eq(feeds.id, id))
+}
+
+export async function getNextFeedToFetch(): Promise<Feed | undefined> {
+ return (await db.select().from(feeds).orderBy(sql`last_fetched_at ASC NULLS FIRST`)).at(0);
 }

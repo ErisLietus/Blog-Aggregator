@@ -22,6 +22,13 @@
       "when": 1777984344614,
       "tag": "0002_bumpy_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778073379232,
+      "tag": "0003_freezing_queen_noir",
+      "breakpoints": true
     }
   ]
 }
