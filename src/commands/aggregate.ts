@@ -43,6 +43,7 @@ export async function scrapeFeeds() {
     const feed = await fetchFeed(nextFeed.url)
 
     for(const item of feed.channel.item){
+        try {
         await createPost({
         url: item.link,
         title: item.title,
@@ -51,10 +52,14 @@ export async function scrapeFeeds() {
         feedId: nextFeed.id,
         createdAt: new Date(),
         updatedAt: new Date(),
-})
+        
+})}catch(e){
+    console.log("post already exists, skipping")
+}
+}
     }
 
-}
+
 
 function handleError(err: unknown) {
   console.error(

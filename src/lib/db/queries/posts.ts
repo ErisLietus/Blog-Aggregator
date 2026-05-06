@@ -1,4 +1,5 @@
-import { db } from "..";
+import { desc, eq } from "drizzle-orm";
+import { db  } from "..";
 import { feed_follows, feeds, NewPost, posts, users } from "../schema";
 
 export async function createPost(post:NewPost) {

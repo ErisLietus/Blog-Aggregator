@@ -9,12 +9,11 @@ if (args.length === 1) {
 }
 
 const posts = await getPostsForUsers(user.id, limit)
-
+console.log("posts found:", posts.length)
 for (const post of posts) {
   console.log(post.title)
   console.log(post.description)
   console.log(post.url)
-  // etc.
 }
 
 }
